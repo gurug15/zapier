@@ -4,6 +4,7 @@ import { SignInSchema, SignUpSchema } from "../types";
 import { prismaClient } from "../db";
 import bcrypt from 'bcrypt'
 import jwt from "jsonwebtoken"
+import { JWT_PASSWORD } from "../config";
 
 const router = Router();
 
@@ -76,9 +77,15 @@ router.post("/signin", async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid password" });
     }
-
+    
+    const token = jwt.sign({
+      id: user.id
+    }, JWT_PASSWORD )
     // Success response
-    return res.status(200).json({ message: "Sign in successful" });
+    return res.status(200).json({ 
+      message: "Sign in successful",
+      token,
+     });
 
   } catch (error) {
     console.error(error);  // Log the error for debugging purposes
@@ -89,9 +96,22 @@ router.post("/signin", async (req, res) => {
 
 
 
-router.get("/user", authMiddleware, (req,res)=>{
-  console.log("user")  
-  res.send("hello")
+router.get("/", authMiddleware, async (req,res)=>{
+  // @ts-ignore   
+  const id = req.id
+  const user = await prismaClient.user.findFirst({
+    where: {
+      id: id
+    },
+    select:{ 
+      name: true,
+      email: true
+    }
+  })
+
+  res.json({
+    user
+  })
 })
 
 

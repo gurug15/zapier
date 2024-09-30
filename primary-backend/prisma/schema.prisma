@@ -13,11 +13,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model User {
   id       Int     @default(autoincrement()) @id
   name     String
   email    String 
   password String
+  zaps      Zap[]
 }
 
 model Zap {
@@ -26,12 +28,14 @@ model Zap {
   trigger      Trigger?
   actions      Action[]
   zapRuns      ZapRun[]
+  userId       Int   
+  user         User   @relation(fields: [userId], references: [id])
 }
 
 model Trigger {
   id           String           @default(uuid()) @id
   zapId        String           @unique
-  triggerId    String           @unique
+  triggerId    String             
   type         AvalableTriggers @relation(fields: [triggerId], references: [id])
   zap          Zap              @relation(fields: [zapId], references: [id])
 }
