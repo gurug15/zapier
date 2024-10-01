@@ -52,12 +52,14 @@ model Action {
 model AvalableActions {
   id           String @default(uuid()) @id
   name         String
+  image        String?
   actoins      Action[]
 }
 
 model AvalableTriggers {
   id          String @default(uuid()) @id
   name        String
+  image       String?
   triggers    Trigger[]
 }
 

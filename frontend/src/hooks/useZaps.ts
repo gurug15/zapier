@@ -59,9 +59,6 @@ export default function useZaps() {
                     }
                 })
                 
-                
-                console.log('Response status:', res.status)
-                console.log('Response data:', res.data)
 
                 if (!res.data || !res.data.zaps || !Array.isArray(res.data.zaps)) {
                     throw new Error("Invalid zaps data received")
