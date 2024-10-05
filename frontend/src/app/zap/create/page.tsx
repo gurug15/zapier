@@ -1,47 +1,75 @@
 'use client'
+import { BACKEND_URL } from "@/app/config";
 import AppBar from "@/components/AppBar";
 import DarkBtn from "@/components/btns/DarkBtn";
-import SelectAction from "@/components/SelectAction";
-import SelectTrigger from "@/components/SelectTrigger";
 import ZapCell from "@/components/ZapCell";
-import { useAvailableActionsNTrigger } from "@/hooks/useAvailableActionsNTrigger";
+import { AvailableItemType, useAvailableActionsNTrigger } from "@/hooks/useAvailableActionsNTrigger";
+import axios from "axios";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 
 export default function Create() {
+  const router = useRouter();
   const [selectedTrigger, setSelectedTrigger] = useState<{
-       AvalableTriggerId: string,
-      AvalableTriggerName: string
+       id: string,
+      name: string
   }>()
   const [selectedActions, setSelectedActions]= useState<{
       index: number
-      AvalableActionId: string,
-      AvalableActionName: string
+      id: string,
+      name: string
   }[]>([])
-  const [selectedModalIndex, setSelectedModalIndex] = useState<null | number>(null)
+  const [selectedModalIndex, setSelectedModalIndex] = useState<null | number>(null);
+  const {availableActions,availableTriggers} = useAvailableActionsNTrigger()
 
 
 
   return (
     <div>
       <AppBar/>
+      <div className="flex justify-end bg-slate-200 pr-5 pt-5">
+        <DarkBtn onClick={async ()=>{
+           if(!selectedTrigger?.id){
+            return;
+           }
+
+           const response = await axios.post(`${BACKEND_URL}/zap`,{
+            availableTriggerId: selectedTrigger.id,
+            triggerMetadata: {},
+            actions: selectedActions.map((selectedAction)=>({
+                availableActionId:selectedAction.id,
+                actionMetadata: {},
+            }))},{
+              headers: {
+                Authorization: localStorage.getItem("token")
+              }
+            })
+
+  
+            const zapid =response.data.zapId;
+            console.log(zapid)
+            router.push("/dashboard")
+
+        }}>Publish</DarkBtn>
+      </div>
       <div className="w-full min-h-screen bg-slate-200 flex flex-col justify-center items-center gap-y-2" >
-      <ZapCell name={selectedTrigger?.AvalableTriggerName ? selectedTrigger.AvalableTriggerName : "Trigger"} index={1} onClick={()=>{
+      <ZapCell name={selectedTrigger?.name ? selectedTrigger.name : "Trigger"} index={1} onClick={()=>{
         setSelectedModalIndex(1)
       }} />
        <div className="w-full "> 
         {selectedActions.map((action, idx)=>{
             return <div key={idx} className="w-full flex justify-center">
-              <ZapCell name={action.AvalableActionName ? action.AvalableActionName : "Action"} index={action.index} onClick={()=>setSelectedModalIndex(action.index)}/>
+              <ZapCell name={action.name ? action.name : "Action"} index={action.index} onClick={()=>setSelectedModalIndex(action.index)}/>
             </div>   
         })}
        </div>
        <DarkBtn onClick={()=>{
         setSelectedActions(a => [...a, {
           index: 2 + a.length,
-          AvalableActionId: "",
-          AvalableActionName: ""
+          id: "",
+          name: ""
         }])
        }}><span className="text-2xl pb-1">+</span></DarkBtn>
       </div>
@@ -54,16 +82,16 @@ export default function Create() {
                                        }
                                        if(selectedModalIndex == 1){
                                         setSelectedTrigger({
-                                          AvalableTriggerId: props.id,
-                                          AvalableTriggerName: props.name
+                                          id: props.id,
+                                          name: props.name
                                         })
                                        }else{
                                         setSelectedActions((a)=>{
                                             const newActions = [...a]
                                             newActions[selectedModalIndex-2]={
                                               index: selectedModalIndex,
-                                              AvalableActionId: props.id,
-                                              AvalableActionName: props.name,
+                                              id: props.id,
+                                              name: props.name,
                                             }
                                             return newActions
                                         })
@@ -72,7 +100,7 @@ export default function Create() {
 
                                        setSelectedModalIndex(null)
 
-                                    }} />}
+                                    }}  availableItems={selectedModalIndex == 1 ? availableTriggers : availableActions } />}
     </div>
   )
 }
@@ -80,9 +108,8 @@ export default function Create() {
 
 
 
-function Modal({index,onSelect}:{index:number,onSelect:(props: null | {name:string,id:string})=>void}){
-  const {availableActions,availableTrigger,loading} = useAvailableActionsNTrigger()
-  console.log(availableActions)
+function Modal({index,onSelect, availableItems}:{index:number,onSelect:(props: null | {name:string,id:string})=>void, availableItems: AvailableItemType[] }){
+  
   return <div className="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
   <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
   <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
@@ -93,17 +120,25 @@ function Modal({index,onSelect}:{index:number,onSelect:(props: null | {name:stri
             <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
               <Image width={20} height={20} src="https://www.svgrepo.com/show/507892/zap.svg" alt="Logo"/>
             </div>
-            <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+            <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
               <h3 className="text-base font-semibold leading-6 text-gray-900" id="modal-title">{index == 1 ? "Select Trigger" : "Select Action"}</h3>
               <div className="mt-2">
-                 { index ==1 ? <SelectTrigger avalableTriggers={availableTrigger}/> : <SelectAction availableActions={availableActions}/>}
+              <div className='w-full'>
+                      <div className=''>
+                         {availableItems.map((avalableItem)=><Item onClick={()=>{
+                          onSelect({
+                            id:avalableItem.id,
+                            name:avalableItem.name
+                          })
+                         }} key={avalableItem.id} Item={avalableItem}/>)}
+                      </div>
+              </div>
               </div>
             </div>
           </div>
         </div>
         <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-          <button type="button"  className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">Deactivate</button>
-          <button type="button" onClick={()=>{
+         <button type="button" onClick={()=>{
             onSelect(null)
           }} className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
         </div>
@@ -111,4 +146,13 @@ function Modal({index,onSelect}:{index:number,onSelect:(props: null | {name:stri
     </div>
   </div>
 </div>
+}
+
+function Item({Item, onClick}:{Item: AvailableItemType, onClick:()=>void}){
+  return <div className='w-1/2 flex gap-3 rounded hover:bg-slate-100 cursor-pointer py-1 px-3' onClick={onClick}>
+           <img className='w-4 h-4 text-center mt-1' src={Item.image} alt="logo"/>
+           <div className=''>
+            {Item.name}
+           </div>
+  </div>
 }

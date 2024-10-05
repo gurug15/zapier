@@ -2,13 +2,9 @@ import { BACKEND_URL } from "@/app/config"
 import axios from "axios"
 import { useEffect, useState } from "react"
 
-export interface AvailableActionsType {
-    id: string,
-    name: string,
-    image: string
-}
 
-export interface AvailableTriggerType {
+
+export interface AvailableItemType {
     id: string,
     name: string,
     image: string
@@ -16,8 +12,8 @@ export interface AvailableTriggerType {
 
 
 export const useAvailableActionsNTrigger = ()=>{
-   const [availableActions, setAvailableActions] = useState<AvailableActionsType[]>([])
-   const [availableTrigger, setAvaiilableTrigger] = useState<AvailableTriggerType[]>([])
+   const [availableActions, setAvailableActions] = useState<AvailableItemType[]>([])
+   const [availableTriggers, setAvaiilableTrigger] = useState<AvailableItemType[]>([])
    const [loading, setLoading] = useState<boolean>(true)
 
    useEffect(()=>{
@@ -39,6 +35,6 @@ export const useAvailableActionsNTrigger = ()=>{
       fetchData()
    },[])
 
-   return { availableActions, availableTrigger, loading}
+   return { availableActions, availableTriggers, loading}
 
 }

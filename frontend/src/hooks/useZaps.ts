@@ -18,7 +18,8 @@ interface TriggerType {
     triggerId: string,
     type: {
         id: string,
-        name: string
+        name: string,
+        image: string
     }
 }
 
@@ -29,7 +30,8 @@ interface ActionType {
     sortingOrder: number,
     type: {
         id: string,
-        name: string
+        name: string,
+        image: string
     }
 }
 
