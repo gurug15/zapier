@@ -15,7 +15,7 @@ router.post("/", authMiddleware, async (req,res)=>{
         message: "Invalid Inputs"
     })
    }
-    
+    console.log(JSON.stringify(parsedBody))
    const zap =  await prismaClient.$transaction(async tx =>{
 
        const zap =  await prismaClient.zap.create({
@@ -25,7 +25,8 @@ router.post("/", authMiddleware, async (req,res)=>{
             actions: {
                 create : parsedBody.data.actions.map((x,idx)=>({
                     actionId: x.availableActionId,
-                    sortingOrder: idx
+                    sortingOrder: idx,
+                    metadata: x.actionMetadata
                 }))
             }
         }

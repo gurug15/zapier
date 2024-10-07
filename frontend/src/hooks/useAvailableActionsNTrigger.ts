@@ -7,7 +7,7 @@ import { useEffect, useState } from "react"
 export interface AvailableItemType {
     id: string,
     name: string,
-    image: string
+    image: string,
 }
 
 
