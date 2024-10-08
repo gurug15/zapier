@@ -1,6 +1,7 @@
+import { PrismaClient } from '@prisma/client'
 import { Kafka } from 'kafkajs'
 
-
+const prismaClient = new PrismaClient();
 const TOPIC_NAME = "zap-events"
 const kafka = new Kafka({
     clientId: 'outBox-processor',
@@ -21,6 +22,44 @@ async function main(){
             offset: message.offset,
             value: message.value?.toString(),
           })
+           
+          const parsedData = JSON.parse(message.value?.toString());
+          const zapRunId = parsedData.zapRunId;
+          const stage = parsedData.stage;
+        
+          const zapRunDetains = await prismaClient.zapRun.findFirst({
+            where:{
+              id: zapRunId
+            },
+            include:{
+              zap: {
+                include:{
+                  actions: {
+                    include: {
+                      type: true
+                    }
+                  }
+                }
+              }
+            }
+          })
+
+          const currentAction = zapRunDetains?.zap.actions.find(x=> x.sortingOrder === parseInt(stage))
+
+          if(!currentAction){
+             console.log("currentAction no found")
+             return;
+          }
+
+          if(currentAction.type.id === 'email'){
+             console.log("Send out an email")
+          }
+
+          if(currentAction.type.id === 'sol'){
+             console.log("send out sol")
+          }
+
+
           await new Promise((r)=>setTimeout(r,9000))
 
           await consumer.commitOffsets([{
