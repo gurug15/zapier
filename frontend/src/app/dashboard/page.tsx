@@ -46,7 +46,7 @@ function ZapTabel(){
             return <div key={zap.id} className='flex m-auto mt-2 border-2 p-4 w-full text-center hover:bg-slate-100 rounded-md cursor-pointer'>
               <div className='flex-1 border-r-2 text-center'>{zap.id}</div>
               <div className='flex-1 border-r-2 text-center'>{zap.trigger.type.name}</div>
-              <div className='flex-1 border-r-2 text-center px-2'>{`${HOOKS_URL}/catch/1/${zap.id}`}</div>
+              <div className='flex-1 border-r-2 text-center px-2'>{`${HOOKS_URL}//hooks/catch/1/${zap.id}`}</div>
               <div className='flex-1 border-r-2 flex justify-center'>
                 <div className='p-1 border-2 rounded-md ml-1 w-7 h-7'><img src={zap.trigger.type.image} alt="T" /></div>
                 {zap.actions.map((action)=>{

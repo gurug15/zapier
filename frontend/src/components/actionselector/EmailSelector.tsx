@@ -11,8 +11,8 @@ export default function EmailSelector({setMetadata}: {setMetadata: (paramas: any
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setMetadata({
-        toEmail,
-        body
+        toEmail: "",
+        body: ""
     })
   };
   console.log(toEmail,body)
