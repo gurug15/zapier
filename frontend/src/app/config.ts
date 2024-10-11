@@ -1,5 +1,7 @@
+import { config } from "dotenv";
+
+config();
 
 
-
-export const BACKEND_URL = "http://localhost:3001/api/v1"
-export const HOOKS_URL = "http://localhost:3000"
+export const BACKEND_URL = process.env.BACKEND_URL
+export const HOOKS_URL = process.env.HOOKS_URL
