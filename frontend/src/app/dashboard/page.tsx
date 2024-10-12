@@ -55,7 +55,7 @@ function ZapTabel(){
                 </div>
               })}</div>
               <div className='flex-1 flex justify-center items-center ' onClick={()=>{
-              router.push("/zaps/"+zap.id)
+              router.push("/zap/id/"+zap.id)
             }} >
               <div className='p-3 rounded-lg border'>GO</div>
             </div>

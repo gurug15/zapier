@@ -18,4 +18,6 @@ app.use("/api/v1/action", actionRouter)
 
 
 
-app.listen(3001)
+app.listen(4001, ()=>{
+    console.log("listning on port 4001")
+})
