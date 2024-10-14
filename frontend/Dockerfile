@@ -1,4 +1,5 @@
-FROM node:21-alpine AS builder
+FROM node:20-alpine AS base
+FROM base AS builder
 WORKDIR /app
 
 ENV NEXT_TELEMETRY_DISABLED 1
@@ -9,7 +10,7 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-FROM node:21-alpine AS runner
+FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
@@ -28,4 +29,4 @@ EXPOSE 4000
 
 ENV PORT 4000
 
-CMD npm run start
+CMD npm start
