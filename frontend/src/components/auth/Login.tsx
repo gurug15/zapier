@@ -6,6 +6,9 @@ import axios from "axios"
 import { useRouter } from 'next/navigation';
 
 
+
+
+
 const LoginCard: React.FC = () => {
   const [formData, setFormData] = useState({
     email: '',
@@ -42,7 +45,7 @@ const LoginCard: React.FC = () => {
               router.push("/dashboard")
             }
            } catch (error) {
-            console.log(error)
+            console.log("error is: ",error)
            }
            
         }}

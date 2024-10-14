@@ -1,27 +1,31 @@
-FROM node:20-alpine
-
+FROM node:21-alpine AS builder
 WORKDIR /app
 
-COPY package*.json ./
+ENV NEXT_TELEMETRY_DISABLED 1
 
-RUN npm install
+COPY package.json package-lock.json ./
+RUN npm install 
 
 COPY . .
-
 RUN npm run build
 
-# FROM node:20-alpine AS runner
+FROM node:21-alpine AS runner
+WORKDIR /app
 
-# WORKDIR /app
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
 
-# COPY --from=builder /app/package*.json ./
-# COPY --from=builder /app/node_modules ./node_modules
-# COPY --from=builder /app/.next ./.next
-# COPY --from=builder /app/next.config.*js ./next.config.*js
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
-ENV NEXT_PUBLIC_BACKEND_URL=http://localhost:4001/api/v1
-ENV NEXT_PUBLIC_HOOKS_URL=http://localhost:4002
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+
+USER nextjs
 
 EXPOSE 4000
 
-CMD ["npm","run","start"]
+ENV PORT 4000
+
+CMD npm run start

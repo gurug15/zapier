@@ -6,6 +6,8 @@ import { BACKEND_URL } from '@/app/config';
 import { useRouter } from 'next/navigation';
 
 
+
+
 const SignUpCard: React.FC = () => {
   const [formData, setFormData] = useState({
     email: '',

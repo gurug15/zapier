@@ -16,6 +16,7 @@ router.post("/", authMiddleware, async (req,res)=>{
     })
    }
     console.log(JSON.stringify(parsedBody))
+    //@ts-ignore
    const zap =  await prismaClient.$transaction(async tx =>{
 
        const zap =  await prismaClient.zap.create({
