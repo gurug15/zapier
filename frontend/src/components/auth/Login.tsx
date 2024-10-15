@@ -15,7 +15,7 @@ const LoginCard: React.FC = () => {
     password: ''
   });
   const  router  = useRouter();
-  console.log(BACKEND_URL)
+  console.log("BACKEND_URL in LOGIN page : ", BACKEND_URL)
   // This is for handling input changes (onChange event)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
