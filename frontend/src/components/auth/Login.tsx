@@ -4,51 +4,51 @@ import Input from '../Input';
 import { BACKEND_URL } from '@/app/config';
 import axios from "axios"
 import { useRouter } from 'next/navigation';
-
-
-
-
+import toast from 'react-hot-toast';
 
 const LoginCard: React.FC = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
-  const  router  = useRouter();
-  console.log("BACKEND_URL in LOGIN page : ", BACKEND_URL)
-  // This is for handling input changes (onChange event)
+  const router = useRouter();
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // This is for handling form submission (onSubmit event)
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData);
+    // Validate input fields
+    if (!formData.email || !formData.password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    try {
+      const res = await axios.post(`${BACKEND_URL}/user/signin`, {
+        username: formData.email,
+        password: formData.password
+      });
+
+      if (res.data) {
+        localStorage.setItem("token", res.data.token);
+        router.push("/dashboard");
+        toast.success(res.data.message)
+      }
+    } catch (error: any) {
+      console.error("Error: ", error);
+      toast.error( error.response && error.response?.data.message ||"Invalid credentials");
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="max-w-md p-6 border border-gray-200 rounded-lg bg-white">
-        <Input  type='email' value={formData.email} onChange={handleChange} name='email' label='Work Email' />
-        <Input type='password' value={formData.password} onChange={handleChange} name='password' label='Password'/>
+      <Input type='email' value={formData.email} onChange={handleChange} name='email' label='Work Email' />
+      <Input type='password' value={formData.password} onChange={handleChange} name='password' label='Password'/>
       <button
         type="submit"
-        onClick={async () => {
-          const res = await axios.post(`${BACKEND_URL}/user/signin`,{
-            username: formData.email,
-            password: formData.password
-          })
-           try {
-            if(res.data){
-              localStorage.setItem("token",res.data.token)
-              router.push("/dashboard")
-            }
-           } catch (error) {
-            console.log("error is: ",error)
-           }
-           
-        }}
         className="w-full bg-orange-500 text-white py-2 px-4 rounded-full font-bold hover:drop-shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
       >
         Login

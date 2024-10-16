@@ -5,11 +5,24 @@ import useZaps from '@/hooks/useZaps'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 import { HOOKS_URL } from '../config'
+import { useAuth } from '@/hooks/useAuth'
+import FullPageLoader from '@/components/FullPageLoader'
+
 
 export default function Dashboard() {
   const router = useRouter()
+  const {isLoading, isAuthenticated} = useAuth();
+   
+  if(isLoading){
+    return <FullPageLoader/>
+  }
+ 
+  if(!isAuthenticated){
+    router.push("/")
+  }
+
   return (
-    <div>
+       <div>
       <AppBar/>
       <div className='max-w-screen-lg m-auto border-r-2 border-l-2 p-5  h-full'>
         <div>
@@ -26,6 +39,7 @@ export default function Dashboard() {
       </div>
       
     </div>
+
   )
 }
 

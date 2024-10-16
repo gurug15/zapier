@@ -57,13 +57,14 @@ router.post("/signin", async (req, res) => {
   const { username, password } = req.body;
   
   // Validate input
-  const parsedData = SignInSchema.safeParse({ username, password });
-  if (!parsedData.success) {
-    return res.status(400).json({ message: "Incorrect inputs" });
-  }
+  
 
   try {
     // Check if user exists
+    const parsedData = SignInSchema.safeParse({ username, password });
+     if (!parsedData.success) {
+    return res.status(404).json({ message: "Incorrect inputs" });
+     }
     const user = await prismaClient.user.findFirst({
       where: { email: parsedData.data.username }
     });
