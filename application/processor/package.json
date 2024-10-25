@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "tsc -b && node dist/index.js"
+    "dev": "tsc -b && node dist/index.js",
+    "build": "tsc -b"
   },
   "prisma": {
-       "seed": "ts-node ./prisma/seed.ts"
-     },
+    "seed": "ts-node ./prisma/seed.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -15,6 +16,7 @@
   "dependencies": {
     "@prisma/client": "^5.19.1",
     "kafkajs": "^2.2.4",
-    "prisma": "^5.19.1"
+    "prisma": "^5.19.1",
+    "ts-node": "^10.9.2"
   }
 }

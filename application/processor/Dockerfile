@@ -10,8 +10,10 @@ COPY . .
 
 RUN npx prisma generate
 
+RUN npm install typescript
+
 RUN npm run build
 
-EXPOSE 4001
+EXPOSE 9092
 
 CMD ["node", "dist/index.js"]

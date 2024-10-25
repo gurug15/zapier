@@ -26,11 +26,12 @@ app.post("/hooks/catch/:userId/:zapId", async (req,res)=>{
         })
     })
      res.json({
-        messaage: "dome"
+        messaage: "done",
+        data: req.body
     })
 })
 
 
-app.listen(3000, ()=>{
-    console.log("hooks listening on port: 3000")
+app.listen(4002, ()=>{
+    console.log("hooks listening on port: 4002")
 })
